@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>The Phylogenetics Sketckpad</title>
+    <script type="text/javascript" src="{{ url_for('static', filename='d3.js') }}"></script>
+    <link type="text/css" href="{{ url_for('static', filename='jquery-ui-.custom.css') }}" rel="stylesheet" />
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery.json.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery-ui.js') }}"></script>
+    <style type="text/css">
+
+path.edge {
+  fill: none;
+  stroke: #666;
+  stroke-width: 2px;
+}
+
+marker#arrow {
+  fill: black;
+}
+
+path.edge.arrow {
+  stroke: black;
+}
+
+path.edge.selected {
+  stroke: red;
+}
+
+path.network {
+	fill: none;
+	stroke: green;
+}
+
+circle.node {
+  fill: #ccc;
+  stroke: #333;
+  stroke-width: 1.5px;
+}
+
+circle.node.selected {
+  fill: #c00;
+  stroke: #333;
+  stroke-width: 1.5px;
+}
+
+
+text {
+  font: 10px sans-serif;
+  stroke-width: 0.5px;
+  stroke: none;
+  fill: black;
+  pointer-events: none;
+}
+
+text.shadow {
+  stroke: #fff;
+  stroke-width: 3px;
+  stroke-opacity: .8;
+}
+
+text.networkLabel {
+	fill: green;
+	pointer-events: all;
+}
+
+div#chart {
+//	border: 1px solid black;
+	float: left;
+	display: inline-block;
+}
+div#lateral{
+	float: left;
+	width: 400px;
+}
+svg { 
+	display:block; 
+}
+
+    </style>
+  </head>
+  <body>
+  	<div class="ui-widget">
+  	  <div class="ui-widget-header ui-corner-top ui-corner-bottom">
+  	    <h2 align="center">The Phylogenetics Sketckpad</h2>
+  	  </div>  
+  	</div>
+  </p>
+  
+  	  	<div id=chart class="ui-corner-top ui-corner-bottom"></div>
+ 
+ 
+  	    
+  	    
+  	    <div id=lateral style="height:500px">
+  	    <div id="myAccordion" >
+  	    	<h2><a href="#">Help</a></h2>
+  	    	<div>
+  	    Interactive canvas:
+  	    <ul>
+  	    	<li>Create node: Alt-Click on canvas</li>
+  	    	<li>Select node: Click on the node</li>
+  	    	<li>Create edge: Select source node and shift-click on target node. If you alt-shift-click on canvas a new node will be created as target node</li>
+  	    	<li>Select edge: Click on the edge</li>
+  	    	<li>Delete edge/node: Select it and press 'D'</li>
+  	    	<li>Get info for node: Hover on it</li>
+  	    	<li>Label node: Hover on it, write label and click Return to confirm</li>
+  	    	<li>Drag canvas: Click on canvas and drag</li>
+  	    	<li>Zoom canvas: Use wheel button on mouse</li>
+  	    </ul>
+  	    Working with networks:
+  	    <ul>
+  	    	<li>Use methods above to create phylogenetic trees or networks</li>
+  	    	<li>In the Build tab</li>
+  	    </ul>
+  	    	</div>
+  	    	<h2><a href="#">Info to display</a></h2>
+  	    	<div>
+  	    Info for nodes:
+  	    <form>
+  	    	<input type="checkbox" name="data_wanted" value="mu" /> Mu data<br />
+  	    	<input type="checkbox" name="data_wanted" value="nested_label" /> Nested labels<br />
+  	    	<input type="checkbox" name="data_wanted" value="cluster" /> Cluster<br />
+  	    </form>
+  	    Info for trees/networks:
+  	    <form>
+  	    	<input type="checkbox" name="data_wanted_networks" value="eNewick"/> (e)Newick<br />
+  	    </form>
+  	    Distances between trees/networks:
+  	    <form>
+  	    	<input type="checkbox" name="distances_wanted" value="mu_distance"/> Mu distance<br />
+  	    	<input type="checkbox" name="distances_wanted" value="nodal_distance_splitted"/> Splitted Nodal Distance<br />
+  	    	<br/><input type=BUTTON value="Compute" name="processNetworkButton" onClick="processNetwork()"><br />
+  	    </form>
+  	    	</div>
+  	    	<h2><a href="#">Build </a></h2>
+  	    	<div>
+  	    <form>
+  	    	<input type='text' name='eNewickWanted' onfocus="deactivateKeyboard()" onkeydown="if (event.keyCode == 13) document.getElementById('getEnewickButton').click()"/><br/> 
+  	    	<br/><input type=BUTTON value="Get from eNewick" id="getEnewickButton" onClick="getFromEnewickClicked()"><br/>
+  	    	<input type=checkbox name="append_to_existing" value="append_to_existing"/> Append to existing
+  	    </form>
+  	    	</div>
+  	  </div>
+  	  </div>
+  	  <script> $(function() {
+           $("#myAccordion").accordion(
+           	{ collapsible: true, fillSpace: true }
+           );
+         }); </script>
+    <script type="text/javascript" src="{{ url_for('static', filename='sketchpad.js') }}"></script>
+
+  </body>
+</html>
+

@@ -1,0 +1,49 @@
+<!doctype html>
+<title>Hello from Flask</title>
+  <h1>Hello World!</h1>
+
+<script type="text/javascript" src="{{ url_for('static', filename='jquery.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='jquery.json.js') }}"></script>
+<script type="text/javascript">
+	function post_as_json(url,dataobject,callback) {
+		// Encodes dataobject in a json string and does a POST at urt.
+		// On success calls callback
+		$.ajax({
+			type: "POST",
+			url:url,
+			data: $.toJSON(dataobject),
+			contentType : "application/json; charset=utf-8",
+			dataType: "json",
+			success: callback
+		})
+	}
+
+	function echo_data(data) {
+		console.log(data)
+		var nodes = data.nodes
+		console.log(nodes)
+		var pos = data.pos
+		$.each(nodes, function(node,data_node){
+			console.log(node,'--->',data_node);
+			console.log('position:',data_node.pos);
+			console.log('arrows to:',data_node.adj);
+			if (data_node.lbl) {
+				console.log('label:',data_node.lbl);
+			}
+			else {
+				console.log('nolabel');
+			}
+		})
+		//nodes.forEach(function(node){
+		//	console.log(node,pos[node]);
+		//})
+	}
+
+	function test() {
+		
+		var data0 = {eNewick:"((1,2),3);",numberId: "1", companyId : "531", altre: { patata:5,ceba:2}};
+		post_as_json("/echo",data0,echo_data);
+	}
+	test()
+	
+</script>
