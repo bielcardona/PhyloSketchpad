@@ -30,3 +30,7 @@ RCS
 RCSLOG
 SCCS
 _$*
+
+testdir/
+
+proves/
