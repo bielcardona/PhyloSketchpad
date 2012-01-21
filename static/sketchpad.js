@@ -365,71 +365,15 @@ function stopBubble() {
 }
 
 function mouseoverNetwork(d) {
-	var myx = d3.event.clientX,
-		myy = d3.event.clientY;
-	if (d.$dialog) {
-		d.$dialog.dialog('destroy');
-		d.$dialog = null;
-	}
-	if (dragging == false) {
-		/*				
-		var labelInput = document.createElement('input');
-		labelInput.type = 'text';
-		labelInput.value = d.label ? d.label : '';
-		labelInput.id = 'labelInput';
-		labelInput.onkeypress = function(e) {
-			console.log(e);
-			var key = e.keyCode || e.which;
-			if(key == 13) {
-				console.log('intro', d);
-				console.log(labelInput.value);
-	            var newLabel = labelInput.value;
-     	        if (newLabel) {// newLabel && (newLabel != d.label)) {
-         	   		d.label = newLabel;
-         	   	}
-         	   	else {
-         	   		delete d.label;
-         	   	}
-            	updateLabels();
-            	redraw();
-				
-				d.$dialog.dialog("close");
-				return false
-			}
-			return true;
-		}
-		labelInput.focus();
-		//labelInput.onfocus = "this.select()";
-		*/
-		d.$dialog = $('<div class="tooltip"></div>')
-		 .html(//'Hi! I am '+ d.id + 
-		  (d.info ? d.info + "<br/>" : "") 
-		  //'Label:' //+ 
-		  //'<input type="text" onkeypress="handleReturn(event)" id="labelInput" value="' + 
-		  //(d.label ? d.label : '') + '"disabled />'
-		 )
-		.dialog({
-			autoOpen: false,
-			modal:false,//true,
-			position: [myx+25,myy],
-			title: 'Info for network'
-		  });
-		deactivateKeyboard()
-		//d3.select(window).on('keydown',function(){});
-		//d.$dialog.append(labelInput);
-		d.$dialog.dialog('open')
-		//labelInput.select();
+//.html( (d.info ? d.info + "<br/>" : "") 
+	var echoed = $('<div></div>')
+		 .html(
+		  (d.info ? d.info + "<br/>" : "") )
+	$("#echo_area").empty().append(echoed);
 
-	}
-	//console.log("mouseoverNetwork");
 }
 	
 function mouseoutNetwork(d) {
-	if (d.$dialog) {
-		d.$dialog.dialog('destroy');
-		d.$dialog = null;
-		activateKeyboard();
-	}
 }
 	
 	
@@ -437,73 +381,40 @@ function mouseoutNetwork(d) {
 
 //var $dialog
 function mouseoverNode(d) {
-
-	var myx = d3.event.clientX,
-		myy = d3.event.clientY;
-	if (d.$dialog) {
-		d.$dialog.dialog('destroy');
-		d.$dialog = null;
-	}
-	if (dragging == false) {
-		//console.log(d);
-		//console.log("wtf")
-		
-		var labelInput = document.createElement('input');
-		labelInput.type = 'text';
-		labelInput.value = d.label ? d.label : '';
-		labelInput.id = 'labelInput';
-		labelInput.onkeypress = function(e) {
-			//console.log(e);
-			var key = e.keyCode || e.which;
-			if(key == 13) {
-				//console.log('intro', d);
-				//console.log(labelInput.value);
-	            var newLabel = labelInput.value;
-     	        if (newLabel) {// newLabel && (newLabel != d.label)) {
-         	   		d.label = newLabel;
-         	   	}
-         	   	else {
-         	   		delete d.label;
-         	   	}
-            	updateLabels();
-            	redraw();
-				
-				d.$dialog.dialog("close");
-				return false
-			}
-			return true;
+	var labelInput = document.createElement('input');
+	labelInput.type = 'text';
+	labelInput.value = d.label ? d.label : '';
+	labelInput.id = 'labelInput';
+	labelInput.onkeypress = function(e) {
+		var key = e.keyCode || e.which;
+		if(key == 13) {
+            var newLabel = labelInput.value;
+ 	        if (newLabel) {
+     	   		d.label = newLabel;
+     	   	}
+     	   	else {
+     	   		delete d.label;
+     	   	}
+        	updateLabels();
+        	redraw();
 		}
-		labelInput.focus();
-		//labelInput.onfocus = "this.select()";
-		
-		d.$dialog = $('<div class="tooltip"></div>')
-		 .html(//'Hi! I am '+ d.id + 
-		  (d.info ? d.info + "<br/>" : "") +
-		  'Label:' //+ 
-		  //'<input type="text" onkeypress="handleReturn(event)" id="labelInput" value="' + 
-		  //(d.label ? d.label : '') + '"disabled />'
-		 )
-		.dialog({
-			autoOpen: false,
-			modal:false,//true,
-			position: [myx+25,myy],
-			title: 'Info for node'
-		  });
-		deactivateKeyboard()
-		//d3.select(window).on('keydown',function(){});
-		d.$dialog.append(labelInput);
-		d.$dialog.dialog('open')
-		labelInput.select();
-
+		return true;
 	}
+	labelInput.focus();
+	var echoed = $('<div></div>')
+		 .html(
+		  (d.info ? d.info + "<br/>" : "") +
+		  'Label:' )
+		echoed.append(labelInput);
+	$("#echo_area").empty().append(echoed);
+	labelInput.focus();
+	labelInput.select()
+	//deactivateKeyboard();
 }
 
+
+
 function mouseoutNode(d) {
-	if (d.$dialog) {
-		d.$dialog.dialog('destroy');
-		d.$dialog = null;
-		activateKeyboard();
-	}
 }
 
 function clickNode(d) {
@@ -511,6 +422,7 @@ function clickNode(d) {
 
 var dragging = false;
 function mousedownNode(d) {
+	stopBubble();
 	//console.log("mousedownNode");
 	if (d3.event.shiftKey) {
 		if (selected && selected != d) {
@@ -560,6 +472,17 @@ function mouseup() {
 		if (selected != dragged) {
 			selected = dragged
 			selectedEdge = null
+				
+			var deleteButton = document.createElement('input');
+			deleteButton.type = 'button';
+			deleteButton.value = 'Delete node';
+			deleteButton.onclick = function(e) {
+				deleteNode(selected);
+				selected = null
+			}
+			$("#echo_area").append(deleteButton);
+	
+
 		} else {
 			selected = null
 			selectedEdge = null
