@@ -35,14 +35,12 @@ function updateLabels() {
 }
 
 function updateNetworks() {
-	//var cc = {}
 	connected_components = {};
 	networks = [];
 	var ccnodes = [];
 	$.each(nodes, function(i,node){
 		connected_components[node.id] = [node.id];
 	})
-	//console.log(connected_components);
 	$.each(edges, function(i,edge){
 		var cc1 = connected_components[edge.source];
 		var cc2 = connected_components[edge.target];
@@ -53,18 +51,11 @@ function updateNetworks() {
 			connected_components[node] = newcc;
 		})
 	})
-	//console.log('conn_com',connected_components)
 	$.each(nodes, function(i,node) {
 		if ($.inArray(connected_components[node.id], ccnodes) == -1) {
-			//console.log('passa?',node.id,connected_components[node]);
 			ccnodes.push(connected_components[node.id]);
 		} 
 	})
-	//$.each(connected_components, function(nodeId,cc) {
-	//	ccnodes.push(cc);
-	//})
-	//ccnodes = $.unique(ccnodes);
-	//console.log('ccnodes',ccnodes);
 	var num=1;
 	$.each(ccnodes, function(i,ccnodesid) {
 		var network = {}
@@ -84,7 +75,6 @@ function updateNetworks() {
 		network.id = ccnodesid.join()
 		network.name = "Net"+num;
 		num += 1;
-		//console.log('xx:',network,num);
 		networks.push(network);
 	})
 	networksUpdated = true;
@@ -92,7 +82,6 @@ function updateNetworks() {
 
 function updateNetworksPositions() {
 	$.each(networks, function(i,network){
-		//console.log(network);
 		var ccnodesid = network.nodes;
 		network.minx = d3.min(ccnodesid, function(d) {
 			return getNodeById(d).x
@@ -155,7 +144,6 @@ function updateScalesNodes() {
 function updateEdges () {
 	$.each(edges, function(i) {
 		var edge = edges[i];
-		//console.log(edge);
 		if (selectedEdge && edge.target == selectedEdge.target && edge.source == selectedEdge.source) {
 			edge.type = 'selected'
 		} else {
@@ -172,8 +160,6 @@ function deleteNode(node) {
 }
 
 function deleteEdge(edge) {
-	//console.log(edge);
-	//console.log(edges);
 	edges = $.grep(edges, function(e){return e.source != edge.source || e.target != edge.target});
 	networksUpdated = false;
 	redraw()
@@ -183,10 +169,10 @@ function deleteEdge(edge) {
 
 // Creation and handling of the svg canvas
 
+
 var svg = d3.select("#chart").append("svg:svg")
     .attr("width", size[0])
     .attr("height", size[1])
-    //.style("fill", "#EEEEEE")
     .style("background", "#EEEEEE")
     .attr("pointer-events", "all")
     .on("click", clickSvg)
@@ -218,16 +204,14 @@ d3.select(window)
     .on("keydown", keydown);
 
 function activateKeyboard() {
-	//console.log("activateKeyboard")
 	d3.select(window).on('keydown',keydown)
 }
 function deactivateKeyboard() {
-	//console.log("deactivateKeyboard")
 	d3.select(window).on('keydown',function(){})
 }
 
 function redraw() {
-	if (d3.event && d3.event.transform){// && isNaN(downx) && isNaN(downy)) {
+	if (d3.event && d3.event.transform){
       d3.event.transform(x, y);
   	};
   	updateLabels();
@@ -242,7 +226,6 @@ function redraw() {
      .data(networks, function(d){return d.id})
      .enter().append("svg:path")
        .attr("class", "network")
-       //.on('mouseover',mouseoverNetwork)
    network$.selectAll(".network")
      .data(networks, function(d){return d.id})
      .exit().remove();
@@ -262,7 +245,6 @@ function redraw() {
        .attr("class", "networkLabel")
        .attr("x", 0)
        .attr("y", "-1.7em")
-       //.attr("class", "shadow")
        .attr("style","text-anchor: middle;")
        .text(function(d) { return d.name; })
        .on('mouseover',mouseoverNetwork)
@@ -270,20 +252,10 @@ function redraw() {
    network$.selectAll(".networkLabel")
      .data(networks, function(d){return d.id})
      .exit().remove();
- /*  
-   network$.selectAll(".network")
-    .attr("d", function(d) {
-    	return "M" + (x(d.minx)-10) + "," + (y(d.miny)-10) +
-    	  "L" + (x(d.minx)-10) + "," + (y(d.maxy)+10) +
-    	  "L" + (x(d.maxx)+10) + "," + (y(d.maxy)+10) +
-    	  "L" + (x(d.maxx)+10) + "," + (y(d.miny)-10) +
-    	  "L" + (x(d.minx)-10) + "," + (y(d.miny)-10) 
-    })
-*/    
+
        network$.selectAll(".networkLabel")//.select("g")
        .text(function(d) { return d.name; })
        .attr("transform", function(d) {
-       	 //var node = getNodeById(d.id);
     	 return "translate(" + x(d.minx) + "," + y(d.miny) + ")";
   		});
 
@@ -294,7 +266,6 @@ function redraw() {
 	 .enter().append("svg:path")
 	  .attr("class", function(d){return "edge "+d.type;})
       .attr("marker-end", function(d) { return "url(#" + d.type + ")"; })
-      //.on('mouseover',function(d){console.log(d)})
       .on('click',clickEdge)
    edge$.selectAll(".edge")
 	 .data(edges,function(d){return d.source+'-'+d.target})
@@ -365,7 +336,6 @@ function stopBubble() {
 }
 
 function mouseoverNetwork(d) {
-//.html( (d.info ? d.info + "<br/>" : "") 
 	var echoed = $('<div></div>')
 		 .html(
 		  (d.info ? d.info + "<br/>" : "") )
@@ -376,10 +346,6 @@ function mouseoverNetwork(d) {
 function mouseoutNetwork(d) {
 }
 	
-	
-
-
-//var $dialog
 function mouseoverNode(d) {
 	var labelInput = document.createElement('input');
 	labelInput.type = 'text';
@@ -412,8 +378,6 @@ function mouseoverNode(d) {
 	//deactivateKeyboard();
 }
 
-
-
 function mouseoutNode(d) {
 }
 
@@ -423,7 +387,6 @@ function clickNode(d) {
 var dragging = false;
 function mousedownNode(d) {
 	stopBubble();
-	//console.log("mousedownNode");
 	if (d3.event.shiftKey) {
 		if (selected && selected != d) {
 			edges.push({source:selected.id, target:d.id, type: 'arrow'});
@@ -438,8 +401,6 @@ function mousedownNode(d) {
 }
 
 function clickSvg(d) {
-	//console.log("clickSvg");
-	//console.log(d);
 	if (d3.event.altKey) {
 		var newNodePos = d3.svg.mouse(svg.node());
 		var i=1;
@@ -495,7 +456,6 @@ function mouseup() {
 }
 
 function keydown() {
-	//console.log(d3.event.keyCode)
 	d3.event.stopPropagation();
 	var keycode = d3.event.keyCode
 	if (keycode == 68) { // 'D'
@@ -517,14 +477,12 @@ function keydown() {
 }
 
 function clickEdge(edge) {
-	//console.log(edge);
 	if (selectedEdge == edge) {
 		selectedEdge = null
 	} else {
 		selectedEdge = edge;	
 	}
 	selected = null
-	//updateEdges();
 	redraw();
 }
 
@@ -553,7 +511,6 @@ function post_as_json(url, dataobject, callback) {
 			if (args.response.error) {
 				$dialog.html(args.response.error)
 			} else {
-			//console.log(args);
 				$dialog.dialog("close");
 				callback(args)
 			}
@@ -569,8 +526,6 @@ function processResponse(response,append) {
 		nodes = response.response.nodes;
 		edges = response.response.edges; 
 	}
-	//console.log(nodes);
-	//edges=response.response.edges;
 	networksUpdated = false;
 	updateLabels();
 	updateScalesNodes();
@@ -590,7 +545,6 @@ function getFromEnewick(eNewick,append) {
 		offsety = d3.max(nodes,function(d){
 			return d.y
 		})
-		//console.log(offsetId);
 	} else {
 		offsetId = 1;
 		offsetx = 0;
@@ -607,15 +561,12 @@ function getFromEnewick(eNewick,append) {
 function getFromEnewickClicked() {
 	var eNewick = $('input:text[name=eNewickWanted]').val();
 	var append = $('input:checkbox[name=append_to_existing]')[0].checked;
-	//console.log('clicked',eNewick,append);
 	getFromEnewick(eNewick,append);
 	//processNetwork();
 }
 
 function getInfo(response) {
-	//console.log(response);
 	var info = response.response.nodes
-	//console.log('info',info);
 	for (var nodeId in info) {
 		var node = getNodeById(nodeId);
 		node.info = info[nodeId];
