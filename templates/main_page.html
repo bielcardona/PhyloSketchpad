@@ -8,6 +8,8 @@
     <script type="text/javascript" src="{{ url_for('static', filename='jquery.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='jquery.json.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='jquery-ui.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery.contextMenu.js') }}"></script>
+    <link type="text/css" href="{{ url_for('static', filename='jquery.contextMenu.css') }}" rel="stylesheet" />
     <style type="text/css">
 
 path.edge {
@@ -116,6 +118,7 @@ svg {
 		  	    	<li>In the Build tab</li>
 		  	    </ul>
   	    	</div>
+  	    	<!--
   	    	<h2><a href="#">Info to display</a></h2>
   	    	<div>
 		  	    Info for nodes:
@@ -138,13 +141,13 @@ svg {
   	    	<h2><a href="#">Build </a></h2>
   	    	<div>
 		  	    <form>
-		  	    	<input type='text' name='eNewickWanted' onfocus="deactivateKeyboard()" onkeydown="if (event.keyCode == 13) document.getElementById('getEnewickButton').click()"/><br/> 
+		  	    	<input type='text' name='eNewickWanted' onkeydown="if (event.keyCode == 13) document.getElementById('getEnewickButton').click()"/><br/> 
 		  	    	<br/><input type=BUTTON value="Get from eNewick" id="getEnewickButton" onClick="getFromEnewickClicked()"><br/>
 		  	    	<input type=checkbox name="append_to_existing" value="append_to_existing"/> Append to existing
 		  	    </form>
   	    	</div>
   	    	<h2><a href="#">Echo area </a></h2>
-  	    	<div id="echo_area"></div>
+  	    	<div id="echo_area"></div> -->
 	    	<h2><a href="#">About </a></h2>
   	    	<div>
   	    		This blahblahblah...

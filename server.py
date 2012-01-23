@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify, session
 import json
 from PhyloNetwork import PhyloNetwork as pn
 import PhyloNetwork.distances as distances
+from PhyloNetwork.generators import Tree_generator_random as tgr
 import networkx as nx
 import time
 
@@ -24,14 +25,14 @@ def dump():
     return jsonify({})
 
 def applyAll(fs,u):
-    return '<br>'.join([command+':'+str(fs[command](u)) for command in fs])
+    return '\n\n'.join([command+':'+str(fs[command](u)) for command in fs])
 
 def applyAllNets(fsnets,net,subnetworks,distances_methods):
-    data1 = '<br>'.join([command+':'+str(getattr(net,str(command))()) for command in fsnets])
+    data1 = '\n\n'.join([command+':'+str(getattr(net,str(command))()) for command in fsnets])
     for dm in distances_methods:
         for net2 in subnetworks:
             if net != net2:
-                data1 += '<br>'+dm+' to '+net2.name+': '+str(distances_methods[dm](net,net2))
+                data1 += '\n\n'+dm+' to '+net2.name+': '+str(distances_methods[dm](net,net2))
     return data1
 
 @app.route("/processNetwork",methods=['POST'])
@@ -81,8 +82,9 @@ def processNetwork():
         #print datanetworks
         
         return jsonify(response = data);
-    except:
-        return jsonify(response={'error':'Some error occurred. Please chech your data. If you think this is a bug, please contact us (see About section)'})
+    except Exception, err:
+        print err
+        return jsonify(response={'error':'Some error occurred. Please chech your data. If you think this is a bug, please contact us (see About section).\n Error message: %s' % err})
 
         
 @app.route('/fromEnewick',methods=['POST'])
@@ -96,31 +98,48 @@ def fromEnewick():
         net = pn()
         net._lastlabel = offsetId
         net.from_eNewick(eNewick)
-        #time.sleep(6)
         session['eNewick'] = eNewick
         pos = nx.graphviz_layout(net, 'dot')
         minx = min([pos[u][0] for u in net.nodes()])
         miny = min([pos[u][1] for u in net.nodes()])
         offsettoapplyx = minx - offsetx - 50
         offsettoapplyy = miny - offsety
-        #===========================================================================
-        # xs = [p[0] for p in pos.values()]
-        # ys = [p[1] for p in pos.values()]
-        # medx = (max(xs)+min(xs))/2
-        # medy = (max(ys)+min(ys))/2
-        # #print pos
-        # #print medx,medy
-        # posnor = {u:(pos[u][0]-medx,pos[u][1]-medy) for u in pos}
-        #===========================================================================
-        #print posnor
         nodes = [{'id':u,'label': net.label(u), 'x':pos[u][0]-offsettoapplyx, 'y':-pos[u][1]+offsettoapplyy} for u in net.nodes()]
         edges = [{'source':edge[0],'target':edge[1], 'type': 'arrow'} for edge in net.edges()]
         dict = {'nodes':nodes,'edges':edges}
-        #print dict
-        #print dict
         return jsonify(response=dict)
-    except:
-        return jsonify(response={'error':'Some error occurred. Please chech your data. If you think this is a bug, please contact us (see About section)'})
+    except Exception, err:
+        return jsonify(response={'error':'Some error occurred. Please chech your data. If you think this is a bug, please contact us (see About section)\n Error message: %s' % err})
+
+@app.route('/getRandom',methods=['POST'])
+def getRandom():
+    try:
+        mydata = request.json
+        n=mydata["n"]
+        binary=mydata["binary"]
+        nested_taxa=mydata["nested_taxa"]
+        taxa = [str(i+1) for i in range(n)]
+        offsetId = mydata["offsetId"]
+        offsetx = mydata["offsetx"]
+        offsety = mydata["offsety"]
+        tg = tgr(taxa, binary=binary, nested_taxa=nested_taxa, id_offset=offsetId)
+        net = tg.next()
+        #net = pn()
+        #net._lastlabel = offsetId
+        #net.from_eNewick(eNewick)
+        #session['eNewick'] = eNewick
+        pos = nx.graphviz_layout(net, 'dot')
+        minx = min([pos[u][0] for u in net.nodes()])
+        miny = min([pos[u][1] for u in net.nodes()])
+        offsettoapplyx = minx - offsetx - 50
+        offsettoapplyy = miny - offsety
+        nodes = [{'id':u,'label': net.label(u), 'x':pos[u][0]-offsettoapplyx, 'y':-pos[u][1]+offsettoapplyy} for u in net.nodes()]
+        edges = [{'source':edge[0],'target':edge[1], 'type': 'arrow'} for edge in net.edges()]
+        dict = {'nodes':nodes,'edges':edges}
+        return jsonify(response=dict)
+    except Exception, err:
+        return jsonify(response={'error':'Some error occurred. Please chech your data. If you think this is a bug, please contact us (see About section)\n Error message: %s' % err})
+
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 

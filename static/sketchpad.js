@@ -5,7 +5,7 @@
 var nodes = [];
 var edges = [];
 var labels = [];
-var connected_components = {}
+// var connected_components = {}
 var networks = [];
 var networksUpdated = false;
 var size = [600,500]
@@ -19,6 +19,8 @@ var y = d3.scale.linear()
 
 var selected = null,
 	dragged = null
+var dragging = false;
+
 
 var selectedEdge = null
 
@@ -35,7 +37,7 @@ function updateLabels() {
 }
 
 function updateNetworks() {
-	connected_components = {};
+	var connected_components = {};
 	networks = [];
 	var ccnodes = [];
 	$.each(nodes, function(i,node){
@@ -198,18 +200,6 @@ var edge$ = svg.append("svg:g")
 var node$ = svg.append("svg:g")
 var label$ = svg.append("svg:g")
 
-d3.select(window)
-//    .on("mousemove", mousemove)
-//    .on("mouseup", mouseup)
-    .on("keydown", keydown);
-
-function activateKeyboard() {
-	d3.select(window).on('keydown',keydown)
-}
-function deactivateKeyboard() {
-	d3.select(window).on('keydown',function(){})
-}
-
 function redraw() {
 	if (d3.event && d3.event.transform){
       d3.event.transform(x, y);
@@ -247,8 +237,8 @@ function redraw() {
        .attr("y", "-1.7em")
        .attr("style","text-anchor: middle;")
        .text(function(d) { return d.name; })
-       .on('mouseover',mouseoverNetwork)
-       .on('mouseout',mouseoutNetwork)
+       //.on('mouseover',mouseoverNetwork)
+       //.on('mouseout',mouseoutNetwork)
    network$.selectAll(".networkLabel")
      .data(networks, function(d){return d.id})
      .exit().remove();
@@ -287,10 +277,10 @@ function redraw() {
      .enter().append("svg:circle")
       .attr("class", "node")
       .attr("r",6)
-      .on('click',clickNode)
+      //.on('click',clickNode)
       .on('mousedown',mousedownNode)
-      .on('mouseover',mouseoverNode)
-      .on('mouseout',mouseoutNode)
+      //.on('mouseover',mouseoverNode)
+      //.on('mouseout',mouseoutNode)
 
    node$.selectAll(".node")
      .data(nodes,function(d){return d.id})   
@@ -335,57 +325,14 @@ function stopBubble() {
     d3.event.stopPropagation();
 }
 
-function mouseoverNetwork(d) {
-	var echoed = $('<div></div>')
-		 .html(
-		  (d.info ? d.info + "<br/>" : "") )
-	$("#echo_area").empty().append(echoed);
 
-}
-	
-function mouseoutNetwork(d) {
-}
-	
-function mouseoverNode(d) {
-	var labelInput = document.createElement('input');
-	labelInput.type = 'text';
-	labelInput.value = d.label ? d.label : '';
-	labelInput.id = 'labelInput';
-	labelInput.onkeypress = function(e) {
-		var key = e.keyCode || e.which;
-		if(key == 13) {
-            var newLabel = labelInput.value;
- 	        if (newLabel) {
-     	   		d.label = newLabel;
-     	   	}
-     	   	else {
-     	   		delete d.label;
-     	   	}
-        	updateLabels();
-        	redraw();
-		}
-		return true;
-	}
-	labelInput.focus();
-	var echoed = $('<div></div>')
-		 .html(
-		  (d.info ? d.info + "<br/>" : "") +
-		  'Label:' )
-		echoed.append(labelInput);
-	$("#echo_area").empty().append(echoed);
-	labelInput.focus();
-	labelInput.select()
-	//deactivateKeyboard();
-}
-
-function mouseoutNode(d) {
-}
-
-function clickNode(d) {
-}
-
-var dragging = false;
 function mousedownNode(d) {
+	console.log('mousedownNode')
+	console.log(d)
+	console.log(d3.event)
+	if (d3.event.which != 1) {
+		return;
+	}
 	stopBubble();
 	if (d3.event.shiftKey) {
 		if (selected && selected != d) {
@@ -433,17 +380,6 @@ function mouseup() {
 		if (selected != dragged) {
 			selected = dragged
 			selectedEdge = null
-				
-			var deleteButton = document.createElement('input');
-			deleteButton.type = 'button';
-			deleteButton.value = 'Delete node';
-			deleteButton.onclick = function(e) {
-				deleteNode(selected);
-				selected = null
-			}
-			$("#echo_area").append(deleteButton);
-	
-
 		} else {
 			selected = null
 			selectedEdge = null
@@ -455,26 +391,6 @@ function mouseup() {
 	stopBubble();
 }
 
-function keydown() {
-	d3.event.stopPropagation();
-	var keycode = d3.event.keyCode
-	if (keycode == 68) { // 'D'
-		if(selected) {
-			deleteNode(selected);
-			redraw();
-		}
-		if(selectedEdge) {
-			deleteEdge(selectedEdge);
-			redraw();
-		}
-	}
-	if (keycode == 76) { // 'L'
-		$("input:disabled").removeAttr('disabled').focus();
-		deactivateKeyboard();
-	}
-	stopBubble();
-	return;
-}
 
 function clickEdge(edge) {
 	if (selectedEdge == edge) {
@@ -532,10 +448,9 @@ function processResponse(response,append) {
 	redraw();
 }
 
-function getFromEnewick(eNewick,append) {
+function getOffsets(append) {
 	var offsetId,offsetx,offsety
-	if (append) {
-		
+	if (append) {		
 		offsetId = d3.max(nodes,function(d){
 			return parseInt(d.id.substr(1))
 		}) + 1;
@@ -550,12 +465,41 @@ function getFromEnewick(eNewick,append) {
 		offsetx = 0;
 		offsety = 0
 	}
+	//console.log(offsetId,offsetx,offsety)
+	return [offsetId,offsetx,offsety]	
+}
+
+function getFromEnewick(eNewick,append) {
+	var offsetId,offsetx,offsety 
+	var offsets = getOffsets(append)
+	offsetId = offsets[0]
+	offsetx = offsets[1]
+	offsety = offsets[2]
+	//console.log(offsetId,offsetx,offsety)
 	post_as_json('/fromEnewick',{
 		'eNewick':eNewick,
 		'offsetId':offsetId,
 		'offsetx':offsetx,
 		'offsety':offsety,
 	}, function(response) {processResponse(response,append)});
+}
+
+function getRandom(number_taxa,binary,nested_taxa,append) {
+	var offsetId,offsetx,offsety 
+	var offsets = getOffsets(append)
+	offsetId = offsets[0]
+	offsetx = offsets[1]
+	offsety = offsets[2]
+	//console.log(offsetId,offsetx,offsety)
+	post_as_json('/getRandom',{
+		'n':number_taxa,
+		'binary': binary,
+		'nested_taxa': nested_taxa,
+		'offsetId':offsetId,
+		'offsetx':offsetx,
+		'offsety':offsety,
+	}, function(response) {processResponse(response,append)});
+	
 }
 
 function getFromEnewickClicked() {
@@ -580,6 +524,22 @@ function getInfo(response) {
 
 function processNetwork() {
 	//updateNetworks();
+	console.log($("#chart").data())
+	var selection = $("#chart").data()
+	var commands = ["mu","nested_label"];
+	var commands_networks = ["eNewick"]	
+	var distances = ["mu_distance","nodal_distance_splitted"]
+	
+	commands = $.grep(commands, function(d) {
+		return (d in selection) && (selection[d])
+	})
+	commands_networks = $.grep(commands_networks, function(d) {
+		return (d in selection) && (selection[d])
+	})
+	distances = $.grep(distances, function(d) {
+		return (d in selection) && (selection[d])
+	})
+	/*
 	var commands = []
 	$('input:checkbox[name=data_wanted]:checked').each(function(){
 		commands.push($(this).val())
@@ -592,9 +552,10 @@ function processNetwork() {
 	$('input:checkbox[name=distances_wanted]:checked').each(function(){
 		distances.push($(this).val())
 	})
+	*/
 	
-	//console.log('process:',commands);
-	if (commands) {
+	console.log('process:',commands);
+	if ((commands.length > 0) || (commands_networks.length > 0) || (distances.length > 0))  {
 	  post_as_json('/processNetwork',{
 		'nodes':$.map(nodes,function(d){return {id:d.id,label:d.label}}),
 		'edges':edges,
@@ -607,4 +568,198 @@ function processNetwork() {
 }
 
 
-getFromEnewick('((Aurora)#H1,((#H1,Boylii)Amerana,Temporaria))Laurasiarana;')
+getFromEnewick('((Aurora)#H1,((#H1,Boylii)Amerana,Temporaria))Laurasiarana;',false)
+
+
+$(function(){
+	$.contextMenu({
+		selector: '.node',
+		build: function($trigger,e) {
+			var node = $trigger[0].__data__;
+			//console.log("node is:", node);
+			return {
+				items: {
+					"edit": {name: "Edit Label", icon: "edit", type: "text", value: node.label,
+						events:{
+		                    keyup: function(e,opt) {
+								var key = e.keyCode || e.which;
+								if(key == 13) {
+						            var newLabel = this.value;
+						 	        if (newLabel) {
+						 	        	//console.log('newlabel: ',newLabel)
+						     	   		node.label = newLabel;
+						     	   	}
+						     	   	else {
+						     	   		//console.log(node)
+						     	   		delete node.label;
+						     	   		//console.log(node)
+						     	   	}
+						        	updateLabels();
+						        	redraw();
+						        	$('.context-menu-list').hide()
+								}
+								return;
+							},
+						}
+					},
+					"info": {name: "Info for node", type: "textarea", value: node.info, icon:"information"},
+					"delete": {name: "Delete Node", icon: "delete", 
+						callback: function(){
+							deleteNode(node);
+						}
+					},
+				},
+			}
+		}
+	});
+});
+
+   
+$(function(){
+    $.contextMenu({
+        selector: '.edge', 
+        //trigger: 'hover',
+        //delay: 500,
+        //autoHide: true,
+        callback: function(key, options) {
+            var m = "clicked: " + key;
+            window.console && console.log(m) || alert(m); 
+        },
+        items: {
+            "delete": {name: "Delete Edge", icon: "delete",
+            	callback: function(key,options) {
+            		//console.log(this)
+            		//var node = getNodeById(this[0].__data__.id);
+            		var edge = this[0].__data__;
+            		deleteEdge(edge);
+            	}
+            },
+        }
+    });
+});
+
+$(function(){
+    $.contextMenu({
+        selector: '.networkLabel', 
+        //trigger: 'hover',
+        //delay: 500,
+        //autoHide: true,
+        build: function($trigger, e) {
+        	var network = $trigger[0].__data__;
+        	//console.log(network)
+        	return {
+        		items: {
+        			'info': {name: "Info for network", type: "textarea", value: network.info, icon:"information"}
+        		}
+        	}
+        }
+    });
+});
+
+$(function(){
+    $.contextMenu({
+        selector: '#chart', 
+        //trigger: 'hover',
+        //delay: 500,
+        //autoHide: true,
+        items: {
+        	"info": {name:"Info to display", icon:"information"},
+        	"data_for_nodes": {
+        		name:"Data for nodes",
+        		items: {
+		        	"mu": {name:"mu", type: "checkbox"},
+		        	"nested_label": {name:"Nested Labels", type: "checkbox"}        			
+        		}
+        	},
+        	"data_for_networks": {
+				name: "Data for networks",
+				items: {
+					"eNewick": {name:"eNewick representation", type:"checkbox"}
+				}        		
+        	},
+        	"distances": {
+				name: "Distances between networks",
+				items: {
+					"mu_distance": {name:"Mu distance", type:"checkbox"},
+					"nodal_distance_splitted": {name: "Nodal distance splitted", type:"checkbox"}
+				}        		
+        	},
+        	"sep1": "---------",
+        	"titleimport": { name:"Import network/tree"},
+			"from_enewick": {
+				name: "From eNewick", 
+				items: {
+					"eNewick_string" : {name:"eNewick to import", type:"text",
+						events:{
+		                    keyup: function(e,opt) {
+								var key = e.keyCode || e.which;
+								if(key == 13) {
+						            var eNewick = this.value;
+						 	        if (eNewick) {
+						 	        	var append = $('input:checkbox[name=context-menu-input-append]')[0].checked
+						     	   		getFromEnewick(eNewick,append)
+						     	   	}
+						        	updateLabels();
+						        	redraw();
+						        	$('.context-menu-list').hide()
+								}
+								return;
+							},
+						}			
+					},
+					"append": {name:"append to existing", type:"checkbox"}
+				}
+			},
+			"random_tree": {
+				name: "Random Tree",
+				items: {
+					"taxa_number" :{name:"number of taxa", type:"text",
+						events:{
+		                    keyup: function(e,opt) {
+								var key = e.keyCode || e.which;
+								if(key == 13) {
+						            var n = parseInt(this.value);
+						 	        if (n) {
+						 	        	var append = $('input:checkbox[name=context-menu-input-appendbis]')[0].checked
+						 	        	var binary = $('input:checkbox[name=context-menu-input-binary]')[0].checked
+						 	        	var nested_taxa = $('input:checkbox[name=context-menu-input-nested_taxa]')[0].checked
+						 	        	console.log('generating:',n,binary,nested_taxa,append)
+						     	   		getRandom(n,binary,nested_taxa,append)
+						     	   	}
+						        	updateLabels();
+						        	redraw();
+						        	$('.context-menu-list').hide()
+								}
+								return;
+							},
+						}			
+					},
+					"binary": {name:"binary", type:"checkbox"},
+					"nested_taxa": {name: "allow nested taxa", type:"checkbox"},
+					"appendbis": {name:"append to existing", type:"checkbox"}
+				}
+			},
+        },
+        events: {
+            show: function(opt) {
+                // this is the trigger element
+                var $this = this;
+                // import states from data store 
+            	//console.log('show', $this, $this.data())
+                $.contextMenu.setInputValues(opt, $this.data());
+                // this basically fills the input commands from an object
+                // like {name: "foo", yesno: true, radio: "3", É}
+            }, 
+            hide: function(opt) {
+                // this is the trigger element
+                var $this = this;
+                // export states to data store
+                $.contextMenu.getInputValues(opt, $this.data());
+                // this basically dumps the input commands' values to an object
+                // like {name: "foo", yesno: true, radio: "3", É}
+                processNetwork();
+            }
+       }	        
+    });
+});
+
