@@ -84,7 +84,7 @@ def processNetwork():
         return jsonify(response = data);
     except Exception, err:
         print err
-        return jsonify(response={'error':'Some error occurred. Please chech your data. If you think this is a bug, please contact us (see About section).\n Error message: %s' % err})
+        return jsonify(response={'error':'Some error occurred. Please chech your data. If you think this is a bug, please contact us (see About section).<br> Error message: %s' % err})
 
         
 @app.route('/fromEnewick',methods=['POST'])
@@ -109,7 +109,7 @@ def fromEnewick():
         dict = {'nodes':nodes,'edges':edges}
         return jsonify(response=dict)
     except Exception, err:
-        return jsonify(response={'error':'Some error occurred. Please chech your data. If you think this is a bug, please contact us (see About section)\n Error message: %s' % err})
+        return jsonify(response={'error':'Some error occurred. Please chech your data. If you think this is a bug, please contact us (see About section)<br> Error message: %s' % err})
 
 @app.route('/getRandom',methods=['POST'])
 def getRandom():

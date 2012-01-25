@@ -327,9 +327,9 @@ function stopBubble() {
 
 
 function mousedownNode(d) {
-	console.log('mousedownNode')
-	console.log(d)
-	console.log(d3.event)
+	//console.log('mousedownNode')
+	//console.log(d)
+	//console.log(d3.event)
 	if (d3.event.which != 1) {
 		return;
 	}
@@ -524,7 +524,7 @@ function getInfo(response) {
 
 function processNetwork() {
 	//updateNetworks();
-	console.log($("#chart").data())
+	//console.log($("#chart").data())
 	var selection = $("#chart").data()
 	var commands = ["mu","nested_label"];
 	var commands_networks = ["eNewick"]	
@@ -539,22 +539,8 @@ function processNetwork() {
 	distances = $.grep(distances, function(d) {
 		return (d in selection) && (selection[d])
 	})
-	/*
-	var commands = []
-	$('input:checkbox[name=data_wanted]:checked').each(function(){
-		commands.push($(this).val())
-	})
-	var commands_networks = []
-	$('input:checkbox[name=data_wanted_networks]:checked').each(function(){
-		commands_networks.push($(this).val())
-	})
-	var distances = []
-	$('input:checkbox[name=distances_wanted]:checked').each(function(){
-		distances.push($(this).val())
-	})
-	*/
 	
-	console.log('process:',commands);
+	//console.log('process:',commands);
 	if ((commands.length > 0) || (commands_networks.length > 0) || (distances.length > 0))  {
 	  post_as_json('/processNetwork',{
 		'nodes':$.map(nodes,function(d){return {id:d.id,label:d.label}}),
@@ -623,7 +609,7 @@ $(function(){
         //autoHide: true,
         callback: function(key, options) {
             var m = "clicked: " + key;
-            window.console && console.log(m) || alert(m); 
+            //window.console && console.log(m) || alert(m); 
         },
         items: {
             "delete": {name: "Delete Edge", icon: "delete",
@@ -663,7 +649,7 @@ $(function(){
         //delay: 500,
         //autoHide: true,
         items: {
-        	"info": {name:"Info to display", icon:"information"},
+        	"info": {name:"Info to display", icon:"information", disabled:true},
         	"data_for_nodes": {
         		name:"Data for nodes",
         		items: {
@@ -684,8 +670,17 @@ $(function(){
 					"nodal_distance_splitted": {name: "Nodal distance splitted", type:"checkbox"}
 				}        		
         	},
+        	"refresh": {name: "Refresh data", icon:"arrow_refresh", 
+        		callback: function(key, opt){
+	        		//console.log(key,options);
+	        		var $this = this;
+	                // export states to data store
+	                $.contextMenu.getInputValues(opt, $this.data());
+	        		processNetwork();
+        		}
+        	},
         	"sep1": "---------",
-        	"titleimport": { name:"Import network/tree"},
+        	"titleimport": { name:"Import network/tree", icon:"add", disabled:true},
 			"from_enewick": {
 				name: "From eNewick", 
 				items: {
@@ -707,7 +702,18 @@ $(function(){
 							},
 						}			
 					},
-					"append": {name:"append to existing", type:"checkbox"}
+					"append": {name:"append to existing", type:"checkbox"},
+					"goeNewick" :{name:"Go", icon:"bullet_go", 
+						callback: function(){
+							var eNewick = $('input:text[name=context-menu-input-eNewick_string]')[0].value;
+							if (eNewick) {
+				 	        	var append = $('input:checkbox[name=context-menu-input-append]')[0].checked
+				     	   		getFromEnewick(eNewick,append)
+				     	   	}
+				        	updateLabels();
+				        	redraw();
+						}
+					}
 				}
 			},
 			"random_tree": {
@@ -723,7 +729,7 @@ $(function(){
 						 	        	var append = $('input:checkbox[name=context-menu-input-appendbis]')[0].checked
 						 	        	var binary = $('input:checkbox[name=context-menu-input-binary]')[0].checked
 						 	        	var nested_taxa = $('input:checkbox[name=context-menu-input-nested_taxa]')[0].checked
-						 	        	console.log('generating:',n,binary,nested_taxa,append)
+						 	        	//console.log('generating:',n,binary,nested_taxa,append)
 						     	   		getRandom(n,binary,nested_taxa,append)
 						     	   	}
 						        	updateLabels();
@@ -736,28 +742,34 @@ $(function(){
 					},
 					"binary": {name:"binary", type:"checkbox"},
 					"nested_taxa": {name: "allow nested taxa", type:"checkbox"},
-					"appendbis": {name:"append to existing", type:"checkbox"}
+					"appendbis": {name:"append to existing", type:"checkbox"},
+					"gorandom" :{name:"Go", icon:"bullet_go", 
+						callback: function(){
+				            var n = parseInt($('input:text[name=context-menu-input-taxa_number]')[0].value);
+				 	        if (n) {
+				 	        	var append = $('input:checkbox[name=context-menu-input-appendbis]')[0].checked
+				 	        	var binary = $('input:checkbox[name=context-menu-input-binary]')[0].checked
+				 	        	var nested_taxa = $('input:checkbox[name=context-menu-input-nested_taxa]')[0].checked
+				 	        	//console.log('generating:',n,binary,nested_taxa,append)
+				     	   		getRandom(n,binary,nested_taxa,append)
+				     	   	}
+				        	updateLabels();
+				        	redraw();
+						}
+					}
+					
 				}
 			},
         },
         events: {
             show: function(opt) {
-                // this is the trigger element
                 var $this = this;
-                // import states from data store 
-            	//console.log('show', $this, $this.data())
                 $.contextMenu.setInputValues(opt, $this.data());
-                // this basically fills the input commands from an object
-                // like {name: "foo", yesno: true, radio: "3", É}
             }, 
             hide: function(opt) {
-                // this is the trigger element
                 var $this = this;
-                // export states to data store
                 $.contextMenu.getInputValues(opt, $this.data());
-                // this basically dumps the input commands' values to an object
-                // like {name: "foo", yesno: true, radio: "3", É}
-                processNetwork();
+                //processNetwork();
             }
        }	        
     });

@@ -89,6 +89,9 @@
 .context-menu-item.icon-delete { background-image: url(images/page_white_delete.png); }
 .context-menu-item.icon-quit { background-image: url(images/door.png); }
 .context-menu-item.icon-information { background-image: url(images/information.png); }
+.context-menu-item.icon-add { background-image: url(images/add.png); }
+.context-menu-item.icon-arrow_refresh { background-image: url(images/arrow_refresh.png); }
+.context-menu-item.icon-bullet_go { background-image: url(images/bullet_go.png); }
 
 /* vertically align inside labels */
 .context-menu-input > label > * { vertical-align: top; }
