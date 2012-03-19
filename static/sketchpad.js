@@ -1,4 +1,4 @@
-"use strict";
+//"use strict";
 
 // Global variables
 
@@ -526,7 +526,7 @@ function processNetwork() {
 	//updateNetworks();
 	//console.log($("#chart").data())
 	var selection = $("#chart").data()
-	var commands = ["mu","nested_label"];
+	var commands = ["mu","nested_label","cluster"];
 	var commands_networks = ["eNewick"]	
 	var distances = ["mu_distance","nodal_distance_splitted"]
 	
@@ -654,7 +654,8 @@ $(function(){
         		name:"Data for nodes",
         		items: {
 		        	"mu": {name:"mu", type: "checkbox"},
-		        	"nested_label": {name:"Nested Labels", type: "checkbox"}        			
+		        	"nested_label": {name:"Nested Labels", type: "checkbox"},        			
+		        	"cluster": {name:"cluster", type: "checkbox"}        			
         		}
         	},
         	"data_for_networks": {
@@ -681,9 +682,9 @@ $(function(){
         	},
         	"sep1": "---------",
         	"titleimport": { name:"Import network/tree", icon:"add", disabled:true},
-			"from_enewick": {
-				name: "From eNewick", 
-				items: {
+//			"from_enewick": {
+//				name: "From eNewick", 
+//				items: {
 					"eNewick_string" : {name:"eNewick to import", type:"text",
 						events:{
 		                    keyup: function(e,opt) {
@@ -713,12 +714,14 @@ $(function(){
 				        	updateLabels();
 				        	redraw();
 						}
-					}
-				}
+//					}
+//				}
 			},
-			"random_tree": {
-				name: "Random Tree",
-				items: {
+        	"sep2": "---------",
+        	"titleimport2": { name:"Import random tree", icon:"add", disabled:true},
+//			"random_tree": {
+//				name: "Random Tree",
+//				items: {
 					"taxa_number" :{name:"number of taxa", type:"text",
 						events:{
 		                    keyup: function(e,opt) {
@@ -756,9 +759,8 @@ $(function(){
 				        	updateLabels();
 				        	redraw();
 						}
-					}
-					
-				}
+//					}				
+//				}
 			},
         },
         events: {

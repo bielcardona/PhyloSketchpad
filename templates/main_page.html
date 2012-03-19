@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title>The Phylogenetics Sketckpad</title>
+    <title>The Phylogeneticist's Sketckpad</title>
     <script type="text/javascript" src="{{ url_for('static', filename='d3.js') }}"></script>
     <link type="text/css" href="{{ url_for('static', filename='jquery-ui-.custom.css') }}" rel="stylesheet" />
     <script type="text/javascript" src="{{ url_for('static', filename='jquery.js') }}"></script>
@@ -86,7 +86,7 @@ svg {
   <body>
   	<div class="ui-widget">
   	  <div class="ui-widget-header ui-corner-top ui-corner-bottom">
-  	    <h2 align="center">The Phylogenetics Sketckpad</h2>
+  	    <h2 align="center">The Phylogeneticist's Sketckpad</h2>
   	  </div>  
   	</div>
   </p>
@@ -106,51 +106,38 @@ svg {
 		  	    	<li>Select node: Click on the node</li>
 		  	    	<li>Create edge: Select source node and shift-click on target node. If you alt-shift-click on canvas a new node will be created as target node</li>
 		  	    	<li>Select edge: Click on the edge</li>
-		  	    	<li>Delete edge/node: Select it and press 'D'</li>
-		  	    	<li>Get info for node: Hover on it</li>
-		  	    	<li>Label node: Hover on it, write label and click Return to confirm</li>
 		  	    	<li>Drag canvas: Click on canvas and drag</li>
 		  	    	<li>Zoom canvas: Use wheel button on mouse</li>
 		  	    </ul>
-		  	    Working with networks:
+		  	    Contextual menus: Right-clicking brings up a contextual menu:
 		  	    <ul>
-		  	    	<li>Use methods above to create phylogenetic trees or networks</li>
-		  	    	<li>In the Build tab</li>
+		  	    	<li>On canvas: In this (main) contextual menu you can select which data will be displayed for networks and nodes, as well as 
+		  	    		adding new networks or trees given by their (e)Newick string or random trees</li>
+		  	    	<li>On nodes: You can (re)label the node, delete it, and get the information you asked for in the main contextual menu</li>
+		  	    	<li>On edges: You can delete the edge</li>
+		  	    	<li>On network labels: You get the information you asked for in the main contextual menu</li>
 		  	    </ul>
   	    	</div>
-  	    	<!--
-  	    	<h2><a href="#">Info to display</a></h2>
-  	    	<div>
-		  	    Info for nodes:
-		  	    <form>
-		  	    	<input type="checkbox" name="data_wanted" value="mu" /> Mu data<br />
-		  	    	<input type="checkbox" name="data_wanted" value="nested_label" /> Nested labels<br />
-		  	    	<input type="checkbox" name="data_wanted" value="cluster" /> Cluster<br />
-		  	    </form>
-		  	    Info for trees/networks:
-		  	    <form>
-		  	    	<input type="checkbox" name="data_wanted_networks" value="eNewick"/> (e)Newick<br />
-		  	    </form>
-		  	    Distances between trees/networks:
-		  	    <form>
-		  	    	<input type="checkbox" name="distances_wanted" value="mu_distance"/> Mu distance<br />
-		  	    	<input type="checkbox" name="distances_wanted" value="nodal_distance_splitted"/> Splitted Nodal Distance<br />
-		  	    	<br/><input type=BUTTON value="Compute" name="processNetworkButton" onClick="processNetwork()"><br />
-		  	    </form>
-  	    	</div>
-  	    	<h2><a href="#">Build </a></h2>
-  	    	<div>
-		  	    <form>
-		  	    	<input type='text' name='eNewickWanted' onkeydown="if (event.keyCode == 13) document.getElementById('getEnewickButton').click()"/><br/> 
-		  	    	<br/><input type=BUTTON value="Get from eNewick" id="getEnewickButton" onClick="getFromEnewickClicked()"><br/>
-		  	    	<input type=checkbox name="append_to_existing" value="append_to_existing"/> Append to existing
-		  	    </form>
-  	    	</div>
-  	    	<h2><a href="#">Echo area </a></h2>
-  	    	<div id="echo_area"></div> -->
 	    	<h2><a href="#">About </a></h2>
   	    	<div>
-  	    		This blahblahblah...
+  	    		<p>
+  	    		The Phylogeneticist's Sketchpad is brought to you by the 
+  	    		<a href="http://bioinfo.uib.es">Bioinformatics</a> group at the 
+  	    		<a href="http://www.uib.es">
+  	    		University of the Balearic
+  	    		Islands</a>. Its main author is <a href="http://bioinfo.uib.es/~cardona">Gabriel Cardona</a>.
+  	    		</p>
+  	    		<p>
+  	    			This web-tool uses the python library <a href="http://pypi.python.org/pypi/phylonetwork">
+  	    				phylonetwork</a>.
+  	    		</p>
+  	    		<p>
+  	    		This project is open-source and is hosted at 
+  	    		<a href="https://github.com/bielcardona/PhyloSketchpad">github</a>
+  	    		</p><p>
+  	    		If you find a bug, or want some new feature to be implemented, please fill in an issue on the github page
+  	    		of the project or send an e-mail to the <a href="mailto:gabriel(dot)cardona(at)uib(dot)es">author</a>.
+  	    		</p>
   	    	</div>
 
   	  </div>
