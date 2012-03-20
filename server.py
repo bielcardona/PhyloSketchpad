@@ -85,6 +85,8 @@ def processNetwork():
             for subnetwork in subnetworks:
                 if onenote  in subnetwork.nodes():
                     subnetwork.name = network['name']
+        for net in subnetworks:
+            print net.eNewick()
         fs = {command:getattr(net,str(command)) for command in commands}
         data = {}
         data['nodes'] = {u:applyAll(fs,u) for u in net.nodes()}

@@ -526,9 +526,9 @@ function processNetwork() {
 	//updateNetworks();
 	//console.log($("#chart").data())
 	var selection = $("#chart").data()
-	var commands = ["mu","nested_label","cluster"];
-	var commands_networks = ["eNewick"]	
-	var distances = ["mu_distance","nodal_distance_splitted"]
+	var commands = ["mu","nested_label","cluster", "height", "depth"];
+	var commands_networks = ["eNewick", "cophenetic_matrix", "nodal_matrix"]	
+	var distances = ["RF_distance","mu_distance","nodal_distance_splitted","cophenetic_distance"]
 	
 	commands = $.grep(commands, function(d) {
 		return (d in selection) && (selection[d])
@@ -655,20 +655,26 @@ $(function(){
         		items: {
 		        	"mu": {name:"mu", type: "checkbox"},
 		        	"nested_label": {name:"Nested Labels", type: "checkbox"},        			
-		        	"cluster": {name:"cluster", type: "checkbox"}        			
+		        	"cluster": {name:"cluster", type: "checkbox"},        			
+		        	"height": {name:"height", type: "checkbox"},        			
+		        	"depth": {name:"depth", type: "checkbox"}        			
         		}
         	},
         	"data_for_networks": {
 				name: "Data for networks",
 				items: {
-					"eNewick": {name:"eNewick representation", type:"checkbox"}
+					"eNewick": {name:"eNewick representation", type:"checkbox"},
+					"cophenetic_matrix": {name:"cophenetic matrix", type:"checkbox"},
+					"nodal_matrix": {name:"nodal_matrix", type:"checkbox"}
 				}        		
         	},
         	"distances": {
 				name: "Distances between networks",
 				items: {
+					"RF_distance": {name:"RF distance", type:"checkbox"},
 					"mu_distance": {name:"Mu distance", type:"checkbox"},
-					"nodal_distance_splitted": {name: "Nodal distance splitted", type:"checkbox"}
+					"nodal_distance_splitted": {name:"splitted nodal distance", type:"checkbox"},
+					"cophenetic_distance": {name: "cophenetic distance", type:"checkbox"}
 				}        		
         	},
         	"refresh": {name: "Refresh data", icon:"arrow_refresh", 
